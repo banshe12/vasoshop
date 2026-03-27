@@ -2,377 +2,339 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>VASO SHOP | Ultra Interface v3.0</title>
+    
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
     <style>
+        /* --- CORE STYLES (Ultra UI) --- */
         :root {
-            --bg-color: #0d0d0d;
-            --card-bg: #1a1a1a;
-            --accent: #00d1ff;
+            --bg: #030303;
+            --card-bg: rgba(18, 18, 18, 0.7);
+            --accent: #00eaff;
+            --accent-dim: rgba(0, 234, 255, 0.15);
             --text-main: #ffffff;
-            --text-dim: #999999;
+            --text-dim: #b0b0b0;
+            --grad-ne: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+            --sh-accent: 0 0 25px rgba(0, 234, 255, 0.4);
+            --ease: cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         body {
-            background-color: var(--bg-color);
+            background-color: var(--bg);
             color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0; padding: 10px; padding-bottom: 120px;
-            user-select: none; -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            margin: 0; padding: 15px;
+            padding-bottom: calc(140px + env(safe-area-inset-bottom));
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .header { text-align: center; padding: 15px 0; }
-        .header h1 {
-            font-size: 28px; margin: 0;
-            background: linear-gradient(135deg, #00d1ff 0%, #0077ff 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-transform: uppercase; letter-spacing: 2px; font-weight: 900;
+        /* 3D Background Container */
+        #particles-js {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            opacity: 0.5;
         }
 
-        .category-title {
-            font-size: 19px; margin: 25px 0 12px;
-            border-left: 4px solid var(--accent); padding-left: 12px;
-            font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+        /* --- UI ELEMENTS --- */
+        .u-header { text-align: center; padding: 25px 0; opacity: 0; transform: translateY(-20px); }
+        .u-header h1 {
+            font-size: 32px; font-weight: 900; margin: 0; text-transform: uppercase;
+            letter-spacing: 4px; color: var(--accent);
+            text-shadow: 0 0 20px rgba(0, 234, 255, 0.6);
+        }
+        .u-header p { font-size: 11px; color: var(--text-dim); margin-top: 5px; opacity: 0.8; }
+
+        /* Лояльность */
+        .loyalty-card {
+            background: var(--card-bg); border-radius: 20px; padding: 18px; margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(15px);
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .loyalty-progress {
+            width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden;
+        }
+        .loyalty-bar { width: 40%; height: 100%; background: var(--grad-ne); border-radius: 3px; }
+
+        /* Каталог ГРИД */
+        .u-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 40px;
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 10px;
-            border: 1px solid #2a2a2a;
-            display: flex; flex-direction: column;
-            justify-content: space-between;
-            transition: border-color 0.2s;
-        }
-
-        .card:active { border-color: var(--accent); }
-
-        .img-container {
-            width: 100%; height: 110px;
-            background: #222; border-radius: 14px;
-            margin-bottom: 8px; overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        .card img {
-            max-width: 100%; max-height: 100%;
-            object-fit: contain;
-        }
-
-        .card-name {
-            font-size: 13px; font-weight: 700;
-            margin-bottom: 3px; line-height: 1.3;
-            height: 34px; overflow: hidden; /* Ограничение в 2 строки */
+        /* КАРТОЧКА ТОВАРА (Ultra Edition) */
+        .u-card {
+            background: var(--card-bg); border-radius: 25px; padding: 12px;
+            border: 1px solid rgba(255,255,255,0.03); backdrop-filter: blur(15px);
+            display: flex; flex-direction: column; justify-content: space-between;
+            transition: transform 0.4s var(--ease), border-color 0.4s var(--ease);
+            position: relative; overflow: hidden;
         }
         
-        .card-flavor {
-            font-size: 11px; color: var(--text-dim);
-            margin-bottom: 8px; font-weight: 500;
-            height: 14px; overflow: hidden;
+        /* Глитч-эффект при наведении (liquid animation) */
+        .u-card::after {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
+            opacity: 0; transition: opacity 0.4s var(--ease);
+        }
+        .u-card:active { transform: scale(0.96) translateY(3px); border-color: rgba(0, 234, 255, 0.3); }
+        .u-card:active::after { opacity: 1; }
+
+        /* Skeleton loader для картинок */
+        .img-skeleton {
+            width: 100%; height: 120px; border-radius: 18px; margin-bottom: 10px;
+            background: linear-gradient(90deg, #181818 25%, #222 50%, #181818 75%);
+            background-size: 200% 100%; animation: skeletonPulse 1.5s infinite;
+        }
+        @keyframes skeletonPulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        .u-card img {
+            width: 100%; height: 120px; object-fit: contain;
+            border-radius: 18px; margin-bottom: 10px; display: none; /* Скрыто до загрузки */
         }
 
-        .card-price {
-            color: var(--accent);
-            font-size: 17px; font-weight: 900;
-            margin-bottom: 10px;
-        }
+        .u-card-name { font-size: 14px; font-weight: 700; color: var(--text-main); height: 36px; overflow: hidden; line-height: 1.3; }
+        .u-card-price { color: var(--accent); font-size: 19px; font-weight: 900; margin: 8px 0; }
 
-        .btn-add {
-            background: linear-gradient(135deg, #0088cc 0%, #00aaff 100%);
-            color: white; border: none; border-radius: 10px;
-            padding: 11px; font-weight: 800; font-size: 12px;
+        .u-btn-add {
+            background: var(--grad-ne); color: white; border: none;
+            border-radius: 12px; padding: 12px; font-weight: 800; font-size: 13px;
             cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: var(--sh-accent); transition: box-shadow 0.3s var(--ease);
+        }
+        .u-btn-add:active { box-shadow: 0 0 10px rgba(0, 234, 255, 0.2); }
+
+        /* 3D Model Viewer Button */
+        .view-3d-btn {
+            position: absolute; top: 10px; right: 10px; width: 30px; height: 30px;
+            background: rgba(255,255,255,0.05); border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-size: 16px; opacity: 0.6;
         }
 
-        /* Footer Cart */
-        .footer-cart {
+        /* --- TOOLS (Калькулятор, Связь) --- */
+        .u-tools { display: flex; gap: 10px; margin-bottom: 30px; }
+        .tool-card {
+            flex: 1; background: var(--card-bg); border-radius: 18px; padding: 15px;
+            border: 1px solid rgba(255,255,255,0.03); backdrop-filter: blur(15px);
+            text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px;
+        }
+        .tool-card img { width: 35px; height: 35px; }
+        .tool-card span { font-size: 12px; font-weight: 600; color: var(--text-dim); }
+
+        /* --- КОРЗИНА (FOOTER) --- */
+        .u-footer {
             position: fixed; bottom: 15px; left: 10px; right: 10px;
-            background: rgba(20, 20, 20, 0.85);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            padding: 15px 20px; border-radius: 18px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.6);
-            z-index: 100; border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(25px);
+            padding: 18px; border-radius: 22px; display: flex;
+            justify-content: space-between; align-items: center;
+            border: 1px solid var(--accent); z-index: 1000;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+            transform: translateY(120px); opacity: 0;
         }
 
         .order-btn {
-            background: #fff; color: #000;
-            font-weight: 900; padding: 10px 20px;
-            border-radius: 10px; text-transform: uppercase; font-size: 13px;
+            background: var(--grad-ne); color: white; padding: 14px 28px;
+            border-radius: 14px; font-weight: 900; text-transform: uppercase;
+            font-size: 14px; border: none; letter-spacing: 1px;
+            box-shadow: var(--sh-accent);
+        }
+
+        /* --- 3D MODAL --- */
+        #modal-3d {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 2000;
+        }
+        #canvas-3d { width: 100%; height: 80%; }
+        .close-3d {
+            position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
+            background: var(--accent); color: #000; padding: 15px 40px; border-radius: 12px;
+            font-weight: 900; text-transform: uppercase;
         }
     </style>
 </head>
 <body>
+    
+    <div id="particles-js"></div>
 
-    <div class="header">
+    <div class="u-header" id="header">
         <h1>VASO SHOP</h1>
-        <p style="color: var(--text-dim); font-size: 11px; margin: 5px 0 0;">Astana • Premium Quality • Crypto Only</p>
+        <p>ASTANA PREMIUM DISTRIBUTOR • v3.0 Ultra UI</p>
     </div>
 
-    <div class="category-title">🍃 Никотиновые пэки</div>
-    <div class="grid">
-        <div class="card">
-            <div class="img-container"><img src="https://app.snus-mafia.ru/image/cache/catalog/snus/kasta/anime/IMG_2395-500x400.png" alt="Kasta Sasuke"></div>
-            <div class="card-name">KASTA 120-125мг</div>
-            <div class="card-flavor">Sasuke (Голубика)</div>
-            <div class="card-price">5 700 ₸</div>
-            <button class="btn-add" onclick="addToCart('KASTA Sasuke', 5700)">В КОРЗИНУ</button>
-        </div>
-        <div class="card">
-            <div class="img-container"><img src="https://app.snus-mafia.ru/image/cache/catalog/snus/kasta/anime/IMG_2399-500x400.png" alt="Kasta Kakashi"></div>
-            <div class="card-name">KASTA 120-125мг</div>
-            <div class="card-flavor">Kakashi (Мята)</div>
-            <div class="card-price">5 700 ₸</div>
-            <button class="btn-add" onclick="addToCart('KASTA Kakashi', 5700)">В КОРЗИНУ</button>
-        </div>
-        <div class="card">
-            <div class="img-container"><img src="https://a.vkidochnaya.com/public/images/055cbc5a3c96101f6205a36fe6aa3309.jpg" alt="Kasta Itachi"></div>
-            <div class="card-name">KASTA 120-125мг</div>
-            <div class="card-flavor">Itachi (Фанта-Мята)</div>
-            <div class="card-price">5 700 ₸</div>
-            <button class="btn-add" onclick="addToCart('KASTA Itachi', 5700)">В КОРЗИНУ</button>
-        </div>
-        <div class="card">
-            <div class="img-container"><img src="https://snusmsk.com/image/cache/catalog/KASTA/limon-s-myatoj-800x800-2-1000x1000.jpg" alt="Kasta Naruto"></div>
-            <div class="card-name">KASTA 120-125мг</div>
-            <div class="card-flavor">Naruto (Лимон)</div>
-            <div class="card-price">5 700 ₸</div>
-            <button class="btn-add" onclick="addToCart('KASTA Naruto', 5700)">В КОРЗИНУ</button>
-        </div>
-        
-        <div class="card">
-            <div class="img-container"><img src="https://vnsnus.do.am/_sh/11/1145m.jpg" alt="Drymost Cherry"></div>
-            <div class="card-name">DRYMOST 200 мг</div>
-            <div class="card-flavor">Merry Cherry</div>
-            <div class="card-price">5 700 ₸</div>
-            <button class="btn-add" onclick="addToCart('Drymost Cherry', 5700)">В КОРЗИНУ</button>
-        </div>
-        
-        <div class="card">
-            <div class="img-container"><img src="https://a.vkidochnaya.com/public/images/0e5831f3cfe25c18af7258b47d083595.jpg" alt="Red Mint"></div>
-            <div class="card-name">RED 170 мг</div>
-            <div class="card-flavor">Черная Мята</div>
-            <div class="card-price">5 000 ₸</div>
-            <button class="btn-add" onclick="addToCart('RED Мята', 5000)">В КОРЗИНУ</button>
-        </div>
-        <div class="card">
-            <div class="img-container"><img src="http://snusgo.ru/image/cache/catalog/snus/red-1-1000x1000.jpg" alt="Red Strawberry"></div>
-            <div class="card-name">RED 170 мг</div>
-            <div class="card-flavor">Клубника</div>
-            <div class="card-price">5 000 ₸</div>
-            <button class="btn-add" onclick="addToCart('RED Клубника', 5000)">В КОРЗИНУ</button>
-        </div>
-
-        <div class="card">
-            <div class="img-container"><img src="https:// novorossiysk.snus-mag-moskva.ru/wp-content/uploads/2025/09/d0b2d0b0d182d0b0-kasta-classic-d0b1d0b0d0b1d0bb-d0b3d0b0d0bc.jpeg" alt="Kasta Mad Bubble"></div>
-            <div class="card-name">KASTA MAD</div>
-            <div class="card-flavor">Бабл Гам</div>
-            <div class="card-price">4 000 ₸</div>
-            <button class="btn-add" onclick="addToCart('KastaMad Bubble', 4000)">В КОРЗИНУ</button>
-        </div>
-        <div class="card">
-            <div class="img-container"><img src="https://vnsnus.do.am/_sh/9/961.jpg" alt="Kasta Mad Melon"></div>
-            <div class="card-name">KASTA MAD</div>
-            <div class="card-flavor">Свежая Дыня</div>
-            <div class="card-price">4 000 ₸</div>
-            <button class="btn-add" onclick="addToCart('KastaMad Дыня', 4000)">В КОРЗИНУ</button>
-        </div>
-
-        <div class="card">
-            <div class="img-container"><img src="https://vnsnus.do.am/_sh/6/649.jpg" alt="Stalker Raspberry"></div>
-            <div class="card-name">STALKER 150мг</div>
-            <div class="card-flavor">Raspberry (Малина)</div>
-            <div class="card-price">5 000 ₸</div>
-            <button class="btn-add" onclick="addToCart('Stalker Малина', 5000)">В КОРЗИНУ</button>
-        </div>
-        <div class="card">
-            <div class="img-container"><img src="https://goodvape.ru/upload/iblock/19d/eerqglkx20h6qstiawp05pd6eau3lt5u.png" alt="Stalker Mohito"></div>
-            <div class="card-name">STALKER 200мг</div>
-            <div class="card-flavor">Мята Мохито</div>
-            <div class="card-price">5 000 ₸</div>
-            <button class="btn-add" onclick="addToCart('Stalker Мохито', 5000)">В КОРЗИНУ</button>
-        </div>
-
-        <div class="card">
-            <div class="img-container"><img src="https://antitobacco.ru/wp-content/uploads/2024/06/lesnye-jagody-corvus-joker-wild-berries-50-mg.png" alt="Corvus Berries"></div>
-            <div class="card-name">Corvus 50 мг</div>
-            <div class="card-flavor">Лесные Ягоды</div>
-            <div class="card-price">5 700 ₸</div>
-            <button class="btn-add" onclick="addToCart('Corvus Ягоды', 5700)">В КОРЗИНУ</button>
-        </div>
-        <div class="card">
-            <div class="img-container"><img src="https://gosmoke.ru/image/cache/9f6d479973e54246c38cac552ce748ba.jpg" alt="Loop Blueberry"></div>
-            <div class="card-name">LOOP 50-60 мг</div>
-            <div class="card-flavor">Blueberries (Черника)</div>
-            <div class="card-price">4 000 ₸</div>
-            <button class="btn-add" onclick="addToCart('Loop Черника', 4000)">В КОРЗИНУ</button>
-        </div>
+    <div class="loyalty-card">
+        <div style="font-size:12px; font-weight:bold; color:var(--accent);">🎁 ПРОГРАММА ЛОЯЛЬНОСТИ</div>
+        <div class="loyalty-progress"><div class="loyalty-bar"></div></div>
+        <div style="font-size:10px; color:var(--text-dim);">До бесплатной доставки: <b>3 заказа</b></div>
     </div>
 
-    <div class="category-title">💨 Электронки</div>
-    <div class="grid">
-        <div class="card">
-            <div class="img-container"><img src="https://static.insales-cdn.com/images/products/1/641/1773855361/Blueberry_Raspberry.jpg" alt="Waka SoPro Watermelon"></div>
-            <div class="card-name">WAKA SoPro 10000</div>
-            <div class="card-flavor">Арбуз Лёд</div>
-            <div class="card-price">6 500 ₸</div>
-            <button class="btn-add" onclick="addToCart('Waka10k Арбуз', 6500)">В КОРЗИНУ</button>
+    <div class="u-tools">
+        <div class="tool-card" onclick="alert('Калькулятор в разработке')">
+            <span style="font-size:24px;">🧮</span>
+            <span>Расчет</span>
         </div>
-        <div class="card">
-            <div class="img-container"><img src="https://static.insales-cdn.com/images/products/1/4993/1774850945/Cranberry_Grape.jpg" alt="Waka SoPro Grape"></div>
-            <div class="card-name">WAKA SoPro 10000</div>
-            <div class="card-flavor">Виноград Клюква</div>
-            <div class="card-price">6 500 ₸</div>
-            <button class="btn-add" onclick="addToCart('Waka10k Виноград', 6500)">В КОРЗИНУ</button>
-        </div>
-        
-        <div class="card">
-            <div class="img-container"><img src="https://eltobacco.ru/wp-content/uploads/2024/11/3b19f5c6-e9be-4db5-ad4a-2ea087d794f8_cfd530f7-d979-4ee3-93a1-c0a8a773759b-768x768.jpg" alt="Lost Mary Peach"></div>
-            <div class="card-name">LOST MARY 10000</div>
-            <div class="card-flavor">Голубая Питая Песик</div>
-            <div class="card-price">6 000 ₸</div>
-            <button class="btn-add" onclick="addToCart('LostMary Питая', 6000)">В КОРЗИНУ</button>
-        </div>
-        <div class="card">
-            <div class="img-container"><img src="https://fullsmoke.net/wp-content/uploads/2024/01/c7a1a100-7cf3-434e-a4ad-639bad1dac36_imageid.png" alt="Lost Mary Grape"></div>
-            <div class="card-name">LOST MARY 10000</div>
-            <div class="card-flavor">Розовый Виноград</div>
-            <div class="card-price">6 000 ₸</div>
-            <button class="btn-add" onclick="addToCart('LostMary Виноград', 6000)">В КОРЗИНУ</button>
-        </div>
-        <div class="card">
-            <div class="img-container"><img src="https://2tocap.ru/image/cache/catalog/NEW/int10/matchamyatasoldom-1000x1000.png" alt="Lost Mary Matcha"></div>
-            <div class="card-name">LOST MARY 10000</div>
-            <div class="card-flavor">Мята Матча</div>
-            <div class="card-price">6 000 ₸</div>
-            <button class="btn-add" onclick="addToCart('LostMary Матча', 6000)">В КОРЗИНУ</button>
-        </div>
-
-        <div class="card">
-            <div class="img-container"><img src="https://tuning72.com/images/stories/virtuemart/product/Elektronnyye-sigarety-Waka-soPro-20000-puffs-6.jpg" alt="Waka 20k Energetic"></div>
-            <div class="card-name">WAKA 20000</div>
-            <div class="card-flavor">Энергетик Смородина</div>
-            <div class="card-price">8 500 ₸</div>
-            <button class="btn-add" onclick="addToCart('Waka20k Энергетик', 8500)">В КОРЗИНУ</button>
-        </div>
-        <div class="card">
-            <div class="img-container"><img src="https://static.insales-cdn.com/images/products/1/722/933987026/WAKA_soPro_20000_Fresh_-_%25D0%259C%25D1%258F%25D1%2582%25D0%25B0.jpg" alt="Waka 20k Mint"></div>
-            <div class="card-name">WAKA 20000</div>
-            <div class="card-flavor">Свежая Мята</div>
-            <div class="card-price">8 500 ₸</div>
-            <button class="btn-add" onclick="addToCart('Waka20k Мята', 8500)">В КОРЗИНУ</button>
-        </div>
-
-        <div class="card">
-            <div class="img-container"><img src="https://sofly.club/userdata/public/gfx/31382/Gleamy-Blue.jpg" alt="Xlim Pro"></div>
-            <div class="card-name">Xlim Pro (OXVA)</div>
-            <div class="card-flavor">Gleamy Blue (Устройство)</div>
-            <div class="card-price">14 000 ₸</div>
-            <button class="btn-add" onclick="addToCart('XlimPro Blue', 14000)">В КОРЗИНУ</button>
-        </div>
-        <div class="card">
-            <div class="img-container"><img src="http://img.dotsmoke.ru/images/products/1/2072/723781656/%25D0%259D%25D0%25B0%25D0%25B1%25D0%25BE%25D1%2580_GeekVape__Aegis_Hero_3__H45_Classic_Pod_Kit_Aqua.jpeg" alt="GeekVape H45"></div>
-            <div class="card-name">GeekVape H45</div>
-            <div class="card-flavor">Aqua (Устройство)</div>
-            <div class="card-price">17 000 ₸</div>
-            <button class="btn-add" onclick="addToCart('GeekVape H45', 17000)">В КОРЗИНУ</button>
-        </div>
-        <div class="card">
-            <div class="img-container"><img src="https://cdn.prod.website-files.com/64705a97bff4c83a3358e709/65ba771dc1e34ff3e75519fa_649185ebf90579dea25aa38e_MINICAN%2525203%281%29.png" alt="Minican 3"></div>
-            <div class="card-name">Minican 3</div>
-            <div class="card-flavor">Черный (Устройство)</div>
-            <div class="card-price">8 000 ₸</div>
-            <button class="btn-add" onclick="addToCart('Minican 3', 8000)">В КОРЗИНУ</button>
-        </div>
+        <a href="https://t.me/rage_333" class="tool-card" style="text-decoration: none;">
+            <img src="https://png.klev.club/uploads/posts/2024-05/png-klev-club-7wtx-p-znachok-chata-png-9.png">
+            <span>Связь</span>
+        </a>
     </div>
 
-    <div class="category-title">💧 Жидкости</div>
-    <div class="grid">
-        <div class="card">
-            <div class="img-container"><img src="https://orenburg-tp.ru/wa-data/public/shop/products/61/25/22561/images/85361/85361.970.png" alt="Husky Siberian"></div>
-            <div class="card-name">Husky Double Ice</div>
-            <div class="card-flavor">Siberian Wolf (Ягоды)</div>
-            <div class="card-price">3 500 ₸</div>
-            <button class="btn-add" onclick="addToCart('Husky Siberian', 3500)">В КОРЗИНУ</button>
-        </div>
-        <div class="card">
-            <div class="img-container"><img src="https://ekb.zenmod.shop/image/cache/catalog/Liquid/HUSKY/Up/husky_re_gumwolf-1200x630.jpg" alt="Husky Gum"></div>
-            <div class="card-name">Husky Double Ice</div>
-            <div class="card-flavor">Gum Wolf (Арбуз)</div>
-            <div class="card-price">3 500 ₸</div>
-            <button class="btn-add" onclick="addToCart('Husky Gum', 3500)">В КОРЗИНУ</button>
-        </div>
+    <div class="u-grid">
         
-        <div class="card">
-            <div class="img-container"><img src="https://static.tildacdn.com/stor3065-3566-4462-a636-393465633566/27445491.jpg" alt="Maxwells Pink"></div>
-            <div class="card-name">Maxwell’s 30ml</div>
-            <div class="card-flavor">Pink (Малина)</div>
-            <div class="card-price">4 000 ₸</div>
-            <button class="btn-add" onclick="addToCart('Maxwells Pink', 4000)">В КОРЗИНУ</button>
+        <div class="u-card">
+            <div class="view-3d-btn" onclick="open3D('xros')">👁️</div>
+            <div class="img-skeleton" id="skel1"></div>
+            <img src="https://via.placeholder.com/150/000000/00eaff?text=XROS+4" id="img1" onload="imgLoaded(1)">
+            <div class="u-card-name">Vaporesso XROS 4 (3D View)</div>
+            <div class="u-card-price">15 000 ₸</div>
+            <button class="u-btn-add" onclick="addToCart('XROS 4', 15000)">В КОРЗИНУ</button>
         </div>
-        <div class="card">
-            <div class="img-container"><img src="https://kurgan.smokemarket.cc/image/cache/catalog/product/c855fdda-84a5-11ef-9b1c-309c23b36407/1c_c855fdda84a511ef9b1c309c23b36407_29516ec78cb311f08df7e8c829096b9e-1200x630.jpg%3F1757336707" alt="Angry Vape Акула"></div>
-            <div class="card-name">Angry Vape 30ml</div>
-            <div class="card-flavor">Акула (Черника)</div>
-            <div class="card-price">2 500 ₸</div>
-            <button class="btn-add" onclick="addToCart('Angry Акула', 2500)">В КОРЗИНУ</button>
-        </div>
-    </div>
 
-    <div class="footer-cart" id="cart-panel" style="display: none;" onclick="sendOrder()">
+        <div class="u-card">
+            <div class="img-skeleton" id="skel2"></div>
+            <img src="http://snusgo.ru/image/cache/catalog/KASTA/hashirama-1000x1000.jpg" id="img2" onload="imgLoaded(2)">
+            <div class="u-card-name">KASTA Sasuke (Голубика)</div>
+            <div class="u-card-price">5 700 ₸</div>
+            <button class="u-btn-add" onclick="addToCart('KASTA Sasuke', 5700)">В КОРЗИНУ</button>
+        </div>
+
+        </div>
+
+    <div class="u-footer" id="u-footer">
         <div>
-            <div id="cart-count" style="font-size: 13px; opacity: 0.8;">Товаров: 0</div>
-            <div id="cart-total" style="font-size: 21px; font-weight: 900;">0 ₸</div>
+            <div id="u-cart-count" style="font-size:13px; opacity:0.8; color:var(--accent);">Товаров: 0</div>
+            <div id="u-cart-total" style="font-size:24px; font-weight:900; letter-spacing:-1px;">0 ₸</div>
         </div>
-        <div class="order-btn">Оформить</div>
+        <button class="order-btn" onclick="sendOrder()">Оформить</button>
+    </div>
+
+    <div id="modal-3d">
+        <div id="canvas-3d"></div>
+        <button class="close-3d" onclick="close3D()">ЗАКРЫТЬ 3D</button>
     </div>
 
     <script>
+        // --- TG INITIALIZATION ---
         let tg = window.Telegram.WebApp;
         tg.expand();
-        tg.enableClosingConfirmation(); // Подтверждение закрытия при наличии товаров
+        tg.enableClosingConfirmation(); // Подтверждение закрытия, если корзина не пуста
 
+        // --- GSAP ANIMATIONS (Official Entry) ---
+        gsap.to("#header", { opacity: 1, y: 0, duration: 1.2, ease: "power4.out", delay: 0.2 });
+        gsap.from(".u-card", { opacity: 0, y: 30, duration: 1, stagger: 0.15, ease: "power3.out", delay: 0.5 });
+
+        // --- ЛОГИКА КАРТИНОК (Skeleton) ---
+        function imgLoaded(id) {
+            document.getElementById(`skel${id}`).style.display = 'none';
+            document.getElementById(`img${id}`).style.display = 'block';
+        }
+
+        // --- КОРЗИНА 3.0 ---
         let cart = [];
+        let footerShown = false;
 
         function addToCart(name, price) {
             cart.push({name, price});
-            updateCart();
-            tg.HapticFeedback.impactOccurred('rigid'); // Вибрация при добавлении
-        }
-
-        function updateCart() {
-            const panel = document.getElementById('cart-panel');
-            const count = document.getElementById('cart-count');
-            const totalDisplay = document.getElementById('cart-total');
             
-            if (cart.length > 0) {
-                panel.style.display = 'flex';
-                let total = cart.reduce((sum, item) => sum + item.price, 0);
-                count.innerText = `В корзине товаров: ${cart.length}`;
-                totalDisplay.innerText = `${total} ₸`;
+            // Анимация показа корзины (если еще не показана)
+            if (!footerShown && cart.length > 0) {
+                gsap.to("#u-footer", { opacity: 1, y: 0, duration: 0.8, ease: "back.out(1.7)" });
+                footerShown = true;
             }
+
+            // Плавное обновление суммы через GSAP
+            let currentTotal = parseFloat(document.getElementById('u-cart-total').innerText.replace(' ₸','')) || 0;
+            let newTotal = cart.reduce((sum, item) => sum + item.price, 0);
+            
+            // "Крутилка" чисел (как в дорогих кассах)
+            gsap.to({val: currentTotal}, {
+                val: newTotal,
+                duration: 0.5,
+                ease: "power1.out",
+                onUpdate: function() {
+                    document.getElementById('u-cart-total').innerText = Math.round(this.targets()[0].val) + " ₸";
+                }
+            });
+
+            document.getElementById('u-cart-count').innerText = `В КОРЗИНЕ ТОВАРОВ: ${cart.length}`;
+            
+            // Haptic Feedback 2.0 (разные вибрации)
+            tg.HapticFeedback.impactOccurred('rigid'); // Жесткая вибрация при добавлении
         }
 
         function sendOrder() {
             if (cart.length > 0) {
-                // Преобразуем корзину в текст для отправки боту
-                let orderText = cart.map(item => `${item.name} - ${item.price}₸`).join('\n');
-                let totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
-                
-                // Отправляем данные в виде объекта
-                tg.sendData(JSON.stringify({
-                    order: orderText,
-                    total: totalPrice
-                }));
+                tg.sendData(JSON.stringify(cart));
+                tg.HapticFeedback.notificationOccurred('success'); // Тройная вибрация при успехе
                 tg.close();
             }
         }
+
+        // --- 3D VIEW ENGINE (Three.js) ---
+        let scene, camera, renderer, cube;
+        function open3D(modelName) {
+            document.getElementById('modal-3d').style.display = 'block';
+            
+            // Инициализация Three.js
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / (window.innerHeight*0.8), 0.1, 1000);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight * 0.8);
+            document.getElementById('canvas-3d').innerHTML = ''; // Чистим канвас
+            document.getElementById('canvas-3d').appendChild(renderer.domElement);
+            
+            // Создаем тестовую модель (Куб, символизирующий вейп, пока не загружены твои модели)
+            const geometry = new THREE.BoxGeometry(1, 3, 1);
+            const material = new THREE.MeshPhongMaterial({ color: 0x00eaff, shininess: 100 });
+            cube = new THREE.Mesh(geometry, material);
+            scene.add(cube);
+            
+            const light = new THREE.PointLight(0xffffff, 1, 100);
+            light.position.set(10, 10, 10);
+            scene.add(light);
+            scene.add(new THREE.AmbientLight(0x404040));
+            
+            camera.position.z = 5;
+            
+            // Запускаем анимацию
+            animate3D();
+        }
+
+        function animate3D() {
+            if (!cube) return;
+            requestAnimationFrame(animate3D);
+            cube.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+
+        function close3D() {
+            document.getElementById('modal-3d').style.display = 'none';
+            // Выгружаем из памяти थ्रीJS
+            cube = null; renderer = null; scene = null; camera = null;
+        }
+
+        // --- PARTICLES.JS (3D Background) ---
+        particlesJS("particles-js", {
+            "particles": {
+                "number": { "value": 70, "density": { "enable": true, "value_area": 800 } },
+                "color": { "value": "#00eaff" },
+                "opacity": { "value": 0.4, "random": true },
+                "size": { "value": 2, "random": true },
+                "line_linked": { "enable": true, "distance": 150, "color": "#00eaff", "opacity": 0.1, "width": 1 },
+                "move": { "enable": true, "speed": 1.8, "direction": "none", "out_mode": "out" }
+            },
+            "interactivity": {
+                "detect_on": "window",
+                "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": true, "mode": "push" } },
+                "modes": { "grab": { "distance": 140, "line_linked": { "opacity": 0.3 } } }
+            }
+        });
     </script>
 </body>
 </html>
