@@ -2,339 +2,128 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>VASO SHOP | Ultra Interface v3.0</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vapor & Snuso Catalogue</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-GSAP -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
     <style>
-        /* --- CORE STYLES (Ultra UI) --- */
-        :root {
-            --bg: #030303;
-            --card-bg: rgba(18, 18, 18, 0.7);
-            --accent: #00eaff;
-            --accent-dim: rgba(0, 234, 255, 0.15);
-            --text-main: #ffffff;
-            --text-dim: #b0b0b0;
-            --grad-ne: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
-            --sh-accent: 0 0 25px rgba(0, 234, 255, 0.4);
-            --ease: cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-            margin: 0; padding: 15px;
-            padding-bottom: calc(140px + env(safe-area-inset-bottom));
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* 3D Background Container */
-        #particles-js {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            opacity: 0.5;
-        }
-
-        /* --- UI ELEMENTS --- */
-        .u-header { text-align: center; padding: 25px 0; opacity: 0; transform: translateY(-20px); }
-        .u-header h1 {
-            font-size: 32px; font-weight: 900; margin: 0; text-transform: uppercase;
-            letter-spacing: 4px; color: var(--accent);
-            text-shadow: 0 0 20px rgba(0, 234, 255, 0.6);
-        }
-        .u-header p { font-size: 11px; color: var(--text-dim); margin-top: 5px; opacity: 0.8; }
-
-        /* Лояльность */
-        .loyalty-card {
-            background: var(--card-bg); border-radius: 20px; padding: 18px; margin-bottom: 25px;
-            border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(15px);
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        .loyalty-progress {
-            width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden;
-        }
-        .loyalty-bar { width: 40%; height: 100%; background: var(--grad-ne); border-radius: 3px; }
-
-        /* Каталог ГРИД */
-        .u-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 40px;
-        }
-
-        /* КАРТОЧКА ТОВАРА (Ultra Edition) */
-        .u-card {
-            background: var(--card-bg); border-radius: 25px; padding: 12px;
-            border: 1px solid rgba(255,255,255,0.03); backdrop-filter: blur(15px);
-            display: flex; flex-direction: column; justify-content: space-between;
-            transition: transform 0.4s var(--ease), border-color 0.4s var(--ease);
-            position: relative; overflow: hidden;
-        }
+        :root { --bg: #070707; --accent: #00eaff; --card: #141414; --text: #ffffff; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 15px; padding-bottom: 120px; }
         
-        /* Глитч-эффект при наведении (liquid animation) */
-        .u-card::after {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
-            opacity: 0; transition: opacity 0.4s var(--ease);
-        }
-        .u-card:active { transform: scale(0.96) translateY(3px); border-color: rgba(0, 234, 255, 0.3); }
-        .u-card:active::after { opacity: 1; }
+        .logo-wrap { text-align: center; margin-bottom: 15px; }
+        .logo-wrap img { width: 85px; height: 85px; border-radius: 50%; border: 2px solid var(--accent); box-shadow: 0 0 20px rgba(0,234,255,0.3); }
+        
+        .header { text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 20px; color: var(--accent); margin: 5px 0; text-transform: uppercase; letter-spacing: 1px; }
+        .city-badge { background: #1a1a1a; border: 1px solid var(--accent); color: var(--accent); padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 13px; display: inline-block; }
 
-        /* Skeleton loader для картинок */
-        .img-skeleton {
-            width: 100%; height: 120px; border-radius: 18px; margin-bottom: 10px;
-            background: linear-gradient(90deg, #181818 25%, #222 50%, #181818 75%);
-            background-size: 200% 100%; animation: skeletonPulse 1.5s infinite;
-        }
-        @keyframes skeletonPulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .cat-title { color: #fff; font-size: 16px; text-transform: uppercase; margin: 25px 0 15px; border-left: 4px solid var(--accent); padding-left: 10px; font-weight: 900; }
 
-        .u-card img {
-            width: 100%; height: 120px; object-fit: contain;
-            border-radius: 18px; margin-bottom: 10px; display: none; /* Скрыто до загрузки */
-        }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .card { background: var(--card); border-radius: 15px; padding: 10px; border: 1px solid #222; display: flex; flex-direction: column; justify-content: space-between; }
+        .card img { width: 100%; height: 110px; object-fit: contain; border-radius: 10px; margin-bottom: 10px; background: #000; }
+        .name { font-size: 12px; font-weight: bold; margin-bottom: 8px; line-height: 1.3; }
+        .price { color: var(--accent); font-size: 15px; font-weight: 900; margin-bottom: 10px; }
+        .btn { background: var(--accent); color: #000; border: none; border-radius: 8px; padding: 10px; font-weight: 800; cursor: pointer; font-size: 12px; width: 100%; }
 
-        .u-card-name { font-size: 14px; font-weight: 700; color: var(--text-main); height: 36px; overflow: hidden; line-height: 1.3; }
-        .u-card-price { color: var(--accent); font-size: 19px; font-weight: 900; margin: 8px 0; }
-
-        .u-btn-add {
-            background: var(--grad-ne); color: white; border: none;
-            border-radius: 12px; padding: 12px; font-weight: 800; font-size: 13px;
-            cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
-            box-shadow: var(--sh-accent); transition: box-shadow 0.3s var(--ease);
-        }
-        .u-btn-add:active { box-shadow: 0 0 10px rgba(0, 234, 255, 0.2); }
-
-        /* 3D Model Viewer Button */
-        .view-3d-btn {
-            position: absolute; top: 10px; right: 10px; width: 30px; height: 30px;
-            background: rgba(255,255,255,0.05); border-radius: 50%; display: flex;
-            align-items: center; justify-content: center; font-size: 16px; opacity: 0.6;
-        }
-
-        /* --- TOOLS (Калькулятор, Связь) --- */
-        .u-tools { display: flex; gap: 10px; margin-bottom: 30px; }
-        .tool-card {
-            flex: 1; background: var(--card-bg); border-radius: 18px; padding: 15px;
-            border: 1px solid rgba(255,255,255,0.03); backdrop-filter: blur(15px);
-            text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px;
-        }
-        .tool-card img { width: 35px; height: 35px; }
-        .tool-card span { font-size: 12px; font-weight: 600; color: var(--text-dim); }
-
-        /* --- КОРЗИНА (FOOTER) --- */
-        .u-footer {
-            position: fixed; bottom: 15px; left: 10px; right: 10px;
-            background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(25px);
-            padding: 18px; border-radius: 22px; display: flex;
-            justify-content: space-between; align-items: center;
-            border: 1px solid var(--accent); z-index: 1000;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.7);
-            transform: translateY(120px); opacity: 0;
-        }
-
-        .order-btn {
-            background: var(--grad-ne); color: white; padding: 14px 28px;
-            border-radius: 14px; font-weight: 900; text-transform: uppercase;
-            font-size: 14px; border: none; letter-spacing: 1px;
-            box-shadow: var(--sh-accent);
-        }
-
-        /* --- 3D MODAL --- */
-        #modal-3d {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 2000;
-        }
-        #canvas-3d { width: 100%; height: 80%; }
-        .close-3d {
-            position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
-            background: var(--accent); color: #000; padding: 15px 40px; border-radius: 12px;
-            font-weight: 900; text-transform: uppercase;
-        }
+        .footer { position: fixed; bottom: 10px; left: 10px; right: 10px; background: rgba(10,10,10,0.95); backdrop-filter: blur(15px); padding: 15px 20px; border-radius: 20px; border: 1px solid var(--accent); display: none; justify-content: space-between; align-items: center; z-index: 1000; }
+        .total-price { font-size: 18px; font-weight: 900; }
+        .order-btn { background: var(--accent); color: #000; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 900; }
     </style>
 </head>
 <body>
-    
-    <div id="particles-js"></div>
 
-    <div class="u-header" id="header">
-        <h1>VASO SHOP</h1>
-        <p>ASTANA PREMIUM DISTRIBUTOR • v3.0 Ultra UI</p>
+    <div class="logo-wrap"><img src="https://ibb.co.com/1tMH3tcL" alt="Logo"></div>
+    <div class="header">
+        <h1>Vapor & Snuso Catalogue</h1>
+        <div class="city-badge" id="city-name">Загрузка...</div>
     </div>
 
-    <div class="loyalty-card">
-        <div style="font-size:12px; font-weight:bold; color:var(--accent);">🎁 ПРОГРАММА ЛОЯЛЬНОСТИ</div>
-        <div class="loyalty-progress"><div class="loyalty-bar"></div></div>
-        <div style="font-size:10px; color:var(--text-dim);">До бесплатной доставки: <b>3 заказа</b></div>
+    <div id="catalog"></div>
+
+    <div class="footer" id="footer">
+        <div id="total" class="total-price">0 ₸</div>
+        <button class="order-btn" onclick="sendOrder()">ОФОРМИТЬ</button>
     </div>
 
-    <div class="u-tools">
-        <div class="tool-card" onclick="alert('Калькулятор в разработке')">
-            <span style="font-size:24px;">🧮</span>
-            <span>Расчет</span>
-        </div>
-        <a href="https://t.me/rage_333" class="tool-card" style="text-decoration: none;">
-            <img src="https://png.klev.club/uploads/posts/2024-05/png-klev-club-7wtx-p-znachok-chata-png-9.png">
-            <span>Связь</span>
-        </a>
-    </div>
+<script>
+    let tg = window.Telegram.WebApp;
+    tg.expand();
+    const urlParams = new URLSearchParams(window.location.search);
+    const userCity = urlParams.get('city') || 'Астана';
+    document.getElementById('city-name').innerText = '📍 ' + userCity.toUpperCase();
 
-    <div class="u-grid">
+    // Функция рандомной цены для снюса
+    const snusPrice = () => Math.floor(Math.random() * (5700 - 5500 + 1)) + 5500;
+
+    const allItems = [
+        // СНЮС
+        { cat: 'snus', name: 'Kasta Sasuke', price: snusPrice(), img: 'https://app.snus-mafia.ru/image/cache/catalog/snus/kasta/anime/IMG_2395-500x400.png', cities: ['Астана', 'Алматы', 'Караганда'] },
+        { cat: 'snus', name: 'Kasta Kakashi', price: snusPrice(), img: 'https://app.snus-mafia.ru/image/cache/catalog/snus/kasta/anime/IMG_2399-500x400.png', cities: ['Астана', 'Алматы'] },
+        { cat: 'snus', name: 'Kasta Itachi', price: snusPrice(), img: 'https://a.vkidochnaya.com/public/images/055cbc5a3c96101f6205a36fe6aa3309.jpg', cities: ['Астана'] },
+        { cat: 'snus', name: 'Drymost Grape', price: 5000, img: 'https://q27.shizashop.ru/product/drymost-tornado-grape-amnesia/', cities: ['Астана', 'Алматы'] },
+        { cat: 'snus', name: 'Red Black Mint', price: 4500, img: 'https://a.vkidochnaya.com/public/images/0e5831f3cfe25c18af7258b47d083595.jpg', cities: ['Астана'] },
+        { cat: 'snus', name: 'Corvus Joker Berries', price: 5200, img: 'https://antitobacco.ru/wp-content/uploads/2024/06/lesnye-jagody-corvus-joker-wild-berries-50-mg.png', cities: ['Астана', 'Караганда'] },
         
-        <div class="u-card">
-            <div class="view-3d-btn" onclick="open3D('xros')">👁️</div>
-            <div class="img-skeleton" id="skel1"></div>
-            <img src="https://via.placeholder.com/150/000000/00eaff?text=XROS+4" id="img1" onload="imgLoaded(1)">
-            <div class="u-card-name">Vaporesso XROS 4 (3D View)</div>
-            <div class="u-card-price">15 000 ₸</div>
-            <button class="u-btn-add" onclick="addToCart('XROS 4', 15000)">В КОРЗИНУ</button>
-        </div>
+        // ОДНОРАЗКИ
+        { cat: 'vape', name: 'Waka 10000 Арбуз Лед', price: 8500, img: 'https://static.insales-cdn.com/images/products/1/641/1773855361/Blueberry_Raspberry.jpg', cities: ['Астана', 'Алматы', 'Караганда'] },
+        { cat: 'vape', name: 'Lost Mary 10000 Питая', price: 9000, img: 'https://eltobacco.ru/wp-content/uploads/2024/11/3b19f5c6-e9be-4db5-ad4a-2ea087d794f8_cfd530f7-d979-4ee3-93a1-c0a8a773759b-768x768.jpg', cities: ['Астана'] },
+        { cat: 'vape', name: 'Waka 20000 Киви Гуава', price: 11000, img: 'https://static.insales-cdn.com/images/products/1/1365/933987669/WAKA_soPro_20000_Kiwi_Passion_Guava.jpg', cities: ['Астана', 'Алматы'] },
+        
+        // ПОДЫ
+        { cat: 'pods', name: 'Vaporesso Xros 4', price: 16000, img: 'https://static.insales-cdn.com/images/products/1/1216/894796992/import_files_c3_c3dcb792355811efa2d618c04ded6b9e_a1f7b63d58ae11efa2d618c04ded6b9e.png', cities: ['Астана', 'Алматы', 'Караганда'] },
+        { cat: 'pods', name: 'Xlim Pro OXVA', price: 14500, img: 'https://sofly.club/userdata/public/gfx/31382/Gleamy-Blue.jpg', cities: ['Астана'] },
+        { cat: 'pods', name: 'GeekVape H45', price: 15500, img: 'http://img.dotsmoke.ru/images/products/1/2072/723781656/Aqua.jpeg', cities: ['Астана', 'Алматы'] },
+        { cat: 'pods', name: 'Minican 3', price: 8500, img: 'https://cdn.prod.website-files.com/64705a97bff4c83a3358e709/65ba771dc1e34ff3e75519fa_649185ebf90579dea25aa38e_MINICAN%2525203%281%29.png', cities: ['Астана', 'Караганда'] },
 
-        <div class="u-card">
-            <div class="img-skeleton" id="skel2"></div>
-            <img src="http://snusgo.ru/image/cache/catalog/KASTA/hashirama-1000x1000.jpg" id="img2" onload="imgLoaded(2)">
-            <div class="u-card-name">KASTA Sasuke (Голубика)</div>
-            <div class="u-card-price">5 700 ₸</div>
-            <button class="u-btn-add" onclick="addToCart('KASTA Sasuke', 5700)">В КОРЗИНУ</button>
-        </div>
+        // ЖИЖИ
+        { cat: 'liquid', name: 'Husky Siberian Wolf', price: 3500, img: 'https://orenburg-tp.ru/wa-data/public/shop/products/61/25/22561/images/85361/85361.970.png', cities: ['Астана', 'Алматы', 'Караганда'] },
+        { cat: 'liquid', name: 'Maxwell Shoria', price: 4000, img: 'https://kzn.zenmod.shop/image/cache/catalog/Liquid/MAXWELLS/Chubby/maxwells_re_30_shoria-800x800.jpg', cities: ['Астана'] },
+        { cat: 'liquid', name: 'Angry Vape Акула', price: 3800, img: 'https://kurgan.smokemarket.cc/image/cache/catalog/product/c855fdda-84a5-11ef-9b1c-309c23b36407/1c_c855fdda84a511ef9b1c309c23b36407_29516ec78cb311f08df7e8c829096b9e-1200x630.jpg', cities: ['Астана', 'Алматы'] }
+    ];
 
-        </div>
+    const categories = { 'snus': 'Снюс', 'vape': 'Одноразки', 'pods': 'Под-системы', 'liquid': 'Жидкости' };
+    let cart = [];
 
-    <div class="u-footer" id="u-footer">
-        <div>
-            <div id="u-cart-count" style="font-size:13px; opacity:0.8; color:var(--accent);">Товаров: 0</div>
-            <div id="u-cart-total" style="font-size:24px; font-weight:900; letter-spacing:-1px;">0 ₸</div>
-        </div>
-        <button class="order-btn" onclick="sendOrder()">Оформить</button>
-    </div>
-
-    <div id="modal-3d">
-        <div id="canvas-3d"></div>
-        <button class="close-3d" onclick="close3D()">ЗАКРЫТЬ 3D</button>
-    </div>
-
-    <script>
-        // --- TG INITIALIZATION ---
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.enableClosingConfirmation(); // Подтверждение закрытия, если корзина не пуста
-
-        // --- GSAP ANIMATIONS (Official Entry) ---
-        gsap.to("#header", { opacity: 1, y: 0, duration: 1.2, ease: "power4.out", delay: 0.2 });
-        gsap.from(".u-card", { opacity: 0, y: 30, duration: 1, stagger: 0.15, ease: "power3.out", delay: 0.5 });
-
-        // --- ЛОГИКА КАРТИНОК (Skeleton) ---
-        function imgLoaded(id) {
-            document.getElementById(`skel${id}`).style.display = 'none';
-            document.getElementById(`img${id}`).style.display = 'block';
-        }
-
-        // --- КОРЗИНА 3.0 ---
-        let cart = [];
-        let footerShown = false;
-
-        function addToCart(name, price) {
-            cart.push({name, price});
-            
-            // Анимация показа корзины (если еще не показана)
-            if (!footerShown && cart.length > 0) {
-                gsap.to("#u-footer", { opacity: 1, y: 0, duration: 0.8, ease: "back.out(1.7)" });
-                footerShown = true;
-            }
-
-            // Плавное обновление суммы через GSAP
-            let currentTotal = parseFloat(document.getElementById('u-cart-total').innerText.replace(' ₸','')) || 0;
-            let newTotal = cart.reduce((sum, item) => sum + item.price, 0);
-            
-            // "Крутилка" чисел (как в дорогих кассах)
-            gsap.to({val: currentTotal}, {
-                val: newTotal,
-                duration: 0.5,
-                ease: "power1.out",
-                onUpdate: function() {
-                    document.getElementById('u-cart-total').innerText = Math.round(this.targets()[0].val) + " ₸";
-                }
-            });
-
-            document.getElementById('u-cart-count').innerText = `В КОРЗИНЕ ТОВАРОВ: ${cart.length}`;
-            
-            // Haptic Feedback 2.0 (разные вибрации)
-            tg.HapticFeedback.impactOccurred('rigid'); // Жесткая вибрация при добавлении
-        }
-
-        function sendOrder() {
-            if (cart.length > 0) {
-                tg.sendData(JSON.stringify(cart));
-                tg.HapticFeedback.notificationOccurred('success'); // Тройная вибрация при успехе
-                tg.close();
+    function render() {
+        const container = document.getElementById('catalog');
+        for (let key in categories) {
+            const cityItems = allItems.filter(i => i.cat === key && i.cities.includes(userCity));
+            if (cityItems.length > 0) {
+                container.innerHTML += `<div class="cat-title">${categories[key]}</div>`;
+                const grid = document.createElement('div');
+                grid.className = 'grid';
+                cityItems.forEach(item => {
+                    grid.innerHTML += `
+                        <div class="card">
+                            <img src="${item.img}" onerror="this.src='https://via.placeholder.com/150/141414/00eaff?text=Vapor+Shop'">
+                            <div>
+                                <div class="name">${item.name}</div>
+                                <div class="price">${item.price} ₸</div>
+                            </div>
+                            <button class="btn" onclick="add('${item.name}', ${item.price})">ДОБАВИТЬ</button>
+                        </div>
+                    `;
+                });
+                container.appendChild(grid);
             }
         }
+    }
 
-        // --- 3D VIEW ENGINE (Three.js) ---
-        let scene, camera, renderer, cube;
-        function open3D(modelName) {
-            document.getElementById('modal-3d').style.display = 'block';
-            
-            // Инициализация Three.js
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / (window.innerHeight*0.8), 0.1, 1000);
-            
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight * 0.8);
-            document.getElementById('canvas-3d').innerHTML = ''; // Чистим канвас
-            document.getElementById('canvas-3d').appendChild(renderer.domElement);
-            
-            // Создаем тестовую модель (Куб, символизирующий вейп, пока не загружены твои модели)
-            const geometry = new THREE.BoxGeometry(1, 3, 1);
-            const material = new THREE.MeshPhongMaterial({ color: 0x00eaff, shininess: 100 });
-            cube = new THREE.Mesh(geometry, material);
-            scene.add(cube);
-            
-            const light = new THREE.PointLight(0xffffff, 1, 100);
-            light.position.set(10, 10, 10);
-            scene.add(light);
-            scene.add(new THREE.AmbientLight(0x404040));
-            
-            camera.position.z = 5;
-            
-            // Запускаем анимацию
-            animate3D();
+    function add(name, price) {
+        cart.push({name, price});
+        document.getElementById('footer').style.display = 'flex';
+        document.getElementById('total').innerText = `${cart.reduce((s, i) => s + i.price, 0)} ₸`;
+        tg.HapticFeedback.impactOccurred('light');
+    }
+
+    function sendOrder() {
+        if(cart.length > 0) {
+            tg.sendData(JSON.stringify({cart, city: userCity}));
+            tg.close();
         }
+    }
 
-        function animate3D() {
-            if (!cube) return;
-            requestAnimationFrame(animate3D);
-            cube.rotation.y += 0.01;
-            renderer.render(scene, camera);
-        }
-
-        function close3D() {
-            document.getElementById('modal-3d').style.display = 'none';
-            // Выгружаем из памяти थ्रीJS
-            cube = null; renderer = null; scene = null; camera = null;
-        }
-
-        // --- PARTICLES.JS (3D Background) ---
-        particlesJS("particles-js", {
-            "particles": {
-                "number": { "value": 70, "density": { "enable": true, "value_area": 800 } },
-                "color": { "value": "#00eaff" },
-                "opacity": { "value": 0.4, "random": true },
-                "size": { "value": 2, "random": true },
-                "line_linked": { "enable": true, "distance": 150, "color": "#00eaff", "opacity": 0.1, "width": 1 },
-                "move": { "enable": true, "speed": 1.8, "direction": "none", "out_mode": "out" }
-            },
-            "interactivity": {
-                "detect_on": "window",
-                "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": true, "mode": "push" } },
-                "modes": { "grab": { "distance": 140, "line_linked": { "opacity": 0.3 } } }
-            }
-        });
-    </script>
+    render();
+</script>
 </body>
 </html>
